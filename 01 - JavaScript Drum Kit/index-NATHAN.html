@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JS Drum Kit</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+
+  <div class="keys">
+    <div data-key="65" class="key">
+      <kbd>A</kbd>
+      <span class="sound">clap</span>
+    </div>
+    <div data-key="83" class="key">
+      <kbd>S</kbd>
+      <span class="sound">hihat</span>
+    </div>
+    <div data-key="68" class="key">
+      <kbd>D</kbd>
+      <span class="sound">kick</span>
+    </div>
+    <div data-key="70" class="key">
+      <kbd>F</kbd>
+      <span class="sound">openhat</span>
+    </div>
+    <div data-key="71" class="key">
+      <kbd>G</kbd>
+      <span class="sound">boom</span>
+    </div>
+    <div data-key="72" class="key">
+      <kbd>H</kbd>
+      <span class="sound">ride</span>
+    </div>
+    <div data-key="74" class="key">
+      <kbd>J</kbd>
+      <span class="sound">snare</span>
+    </div>
+    <div data-key="75" class="key">
+      <kbd>K</kbd>
+      <span class="sound">tom</span>
+    </div>
+    <div data-key="76" class="key">
+      <kbd>L</kbd>
+      <span class="sound">tink</span>
+    </div>
+  </div>
+
+  <audio data-key="65" src="sounds/clap.wav"></audio>
+  <audio data-key="83" src="sounds/hihat.wav"></audio>
+  <audio data-key="68" src="sounds/kick.wav"></audio>
+  <audio data-key="70" src="sounds/openhat.wav"></audio>
+  <audio data-key="71" src="sounds/boom.wav"></audio>
+  <audio data-key="72" src="sounds/ride.wav"></audio>
+  <audio data-key="74" src="sounds/snare.wav"></audio>
+  <audio data-key="75" src="sounds/tom.wav"></audio>
+  <audio data-key="76" src="sounds/tink.wav"></audio>
+
+<script>
+  function playSound(e) {
+    const audio = document.querySelector(`audio[data-key="${e.keyCode}"]`); //声明变量来选中对应音效
+    // data-* 是数据属性，可以用来储存一些不用显示的额外信息
+    const key = document.querySelector(`.key[data-key="${e.keyCode}"]`); // 声明变量来选中对应按键元素
+    // console.log(audio); // 可以看到我们选中了的audio元素
+    if (!audio) return; // 如果按的键不在设定的几个之中就会报错，所以在这一步阻止函数继续。
+    audio.currentTime = 0; // 直接播放音效时，会等播放完一段后再进行下一段，加入这句后会立即从0开始播放新的音效
+    audio.play(); // 播放音效
+    key.classList.add('playing'); // 添加动画
+  }
+
+  function removeTransition(e) {
+    console.log(e); // 观察有哪些属性
+    if (e.propertyName !== 'transform') return; // 跳过不是transform的属性
+    console.log(this); // 如果实在不知道this指向谁，可以这样确定
+    this.classList.remove('playing'); 
+    // 这里this是被下方挂在key元素上的事件监听函数所调用，所以this是监听到被按键按下的key元素
+  }
+
+  const keys = document.querySelectorAll('.key'); // 声明一个NodeList（类似数组）
+  // keys.addEventListener('transitionend'); // 对于数组或NodeList，必须对每个元素添加监听才有效
+
+  keys.forEach(key => key.addEventListener('transitionend', removeTransition));
+  // 如果css写了transition的时间，就不宜用setTimeout来设置延时，会叠加。
+
+  window.addEventListener('keydown',playSound); // 把playSound这个函数单独拉出来写，更简洁
+</script>
+
+
+</body>
+</html>
