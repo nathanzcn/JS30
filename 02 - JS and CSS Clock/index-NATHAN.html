@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JS + CSS Clock</title>
+</head>
+<body>
+
+
+    <div class="clock">
+      <div class="clock-face">
+        <div class="hand hour-hand"></div>
+        <div class="hand min-hand"></div>
+        <div class="hand second-hand"></div>
+      </div>
+    </div>
+
+
+  <style>
+    html {
+      background: #018DED url(http://unsplash.it/1500/1000?image=881&blur=5);
+      background-size: cover;
+      font-family: 'helvetica neue';
+      text-align: center;
+      font-size: 10px;
+    }
+
+    body {
+      margin: 0;
+      font-size: 2rem;
+      display: flex;
+      flex: 1;
+      min-height: 100vh;
+      align-items: center;
+    }
+
+    .clock {
+      width: 30rem;
+      height: 30rem;
+      border: 20px solid white;
+      border-radius: 50%;
+      margin: 50px auto;
+      position: relative;
+      padding: 2rem;
+      box-shadow:
+        0 0 0 4px rgba(0,0,0,0.1),
+        inset 0 0 0 3px #EFEFEF,
+        inset 0 0 10px black,
+        0 0 10px rgba(0,0,0,0.2);
+    }
+
+    .clock-face {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform: translateY(-3px); /* account for the height of the clock hands */
+    }
+
+    .hand {
+      width: 50%;
+      height: 6px;
+      background: black;
+      position: absolute;
+      top: 50%;
+      transform: rotate(90deg); /* 让指针从12点方向开始旋转 */
+      transform-origin: 100%; /* 调整旋转的中心点 */
+      transition: all 0.05s; /* TODO 这里还不熟悉，包括cubic-bezier */
+      transition-timing-function: cubic-bezier(0.2, 1.5, 0.5, 1.5);
+    }
+
+  </style>
+
+  <script>
+    const secondHand = document.querySelector('.second-hand');
+    const minHand = document.querySelector('.min-hand');
+    const hourHand = document.querySelector('.hour-hand');
+    function setTime() {
+      const now = new Date; // Date 是一个关键词
+      const secondsDeg = ((now.getSeconds() / 60) * 360 + 90);
+      const minsDeg = ((now.getMinutes() / 60) * 360 + 90);
+      const hoursDeg = ((now.getHours() / 24) * 360 + 90);
+      // 按小时、分钟、秒钟分别获取时间
+      secondHand.style.transform = `rotate(${secondsDeg}deg)`;
+      minHand.style.transform = `rotate(${minsDeg}deg)`;
+      hourHand.style.transform = `rotate(${hoursDeg}deg)`;
+      // 不要漏掉这里的deg
+      const hands = document.querySelectorAll(".hand")
+      if (now.getSeconds = 59) {
+        hands.forEach(e => {e.style.transition = "all 0s"});
+      } else {
+        hands.forEach(e => {e.style.transition = "all 0.05s"});
+      }
+      // 在59秒时调整变化时间为0，以避免逆时针一圈的效果
+      // TODO 此处应有直接用JS调整CSS属性的方法
+    }
+    setInterval(setTime, 1000); // 每隔1秒动一下指针
+
+  </script>
+</body>
+</html>
