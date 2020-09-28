@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Type Ahead 👀</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <form class="search-form">
+    <input type="text" class="search" placeholder="City or State">
+    <ul class="suggestions">
+      <li>Filter for a city</li>
+      <li>or a state</li>
+    </ul>
+  </form>
+<script>
+const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+
+let cities = []; // 新建一个数组
+
+fetch(endpoint)
+  .then(blob => blob.json()) // 首先，把fetch来的东西调整成json格式
+  .then(data => cities.push(...data)) // 这里是一个展开语法，把data里的信息放进cities里
+  
+function findMatches(wordToMatch, cities) {
+  return cities.filter(place => {
+    
+    const regex = new RegExp(wordToMatch, 'gi');
+    return place.city.match(regex) || place.state.match(regex)
+    // 或门 只要匹配到城市名或州名中的一个即可
+  });
+}
+function numberWithCommas(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  // 千位分隔符：先转换成字符串，然后用正则表达式添加逗号
+}
+function displayMatches() {
+  console.log(this.value); // 确认this指向textcontext
+  const matchArray = findMatches(this.value, cities);
+  console.log(matchArray); // 确认正则表达式匹配的内容
+  
+  const html = matchArray.map(place => {
+    // 将匹配到的内容中等于输入的部分替换成高亮的行内元素
+    const regex = new RegExp(this.value, "gi"); // 获取输入的内容
+    const cityName = place.city.replace(regex, `<span class="hl">${this.value}</span>`);
+    const stateName = place.state.replace(regex, `<span class="hl">${this.value}</span>`);
+    return `
+      <li>
+        <span class="name">${cityName}, ${stateName}</span>
+        <span class="population">${numberWithCommas(place.population)}</span>
+      </li>
+    `;
+  }).join(''); // 把这些元素连起来
+  suggestions.innerHTML = html;
+}
+
+const searchInput = document.querySelector('.search');
+const suggestions = document.querySelector('.suggestions');
+
+searchInput.addEventListener('change', displayMatches);
+searchInput.addEventListener('keyup', displayMatches);
+
+</script>
+</body>
+</html>
